@@ -1,0 +1,181 @@
+---
+title: "Lab 8"
+author: "Emilie McReynolds"
+date: "3/28/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Task 1
+## Get working directory
+getwd()
+
+
+# Task 2
+## Create a sample of size n=10 from a uniform distribution that has lower limit 0 and upper  limit 5 by using runif(10,0,5).
+unif_sample <- runif(10,0,5)
+unif_sample
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Give the mean and variance of the uniform for the case where a=0, b=5, i.e. μ=(a+b)/2,σ^2=(b-a)^2/12
+### a = 0 and b = 5
+$\mu =E(\bar Y) =\frac{a+b}{2} =\frac{0+5}{2} = 2.5$
+$\sigma^2 =\frac{(b-a)^2}{12} = \frac{(5-0)^2}{12} = \frac{25}{12} = 2.0833$
+
+## Use the sample you made to calculate 𝑥 𝑎𝑛𝑑 𝑠2. How do they compare to the population parameters?
+### mu
+mean(unif_sample)
+### sigma^2
+var(unif_sample)
+#### The mean and variance are nearly accurate.
+
+## Including Plots
+## Mean and Variance of T and Y-bar
+$E(T) = nE(Y_i)$
+$V(T) = nV(Y_i)$
+$E(\bar Y) = E(\frac{Y_1 +...+Y_n}{n}) = \frac{nE(Y_i)}{n} = E(Y_i)$
+$V(\bar Y) = V(\frac{T}{N}) = \frac{1}{n^2}V(T) = \frac{nV(Y_i)}{n^2} = \frac{V(Y_i)}{n}$
+
+## Lines A-D
+### A Creates a sample from the uniform distribution from 0 to 5 of size n*iter
+### B Stores the sample created from line A into a matrix called data that consists of n rows, and iter columns, arranging the data by row
+### C Applies the function sum to the columns of the data matrix and stores the result in sm
+### D Runs the function myclt with n = 10 and iter = 10000, stores the result in w
+
+myclt=function(n,iter){
+  y=runif(n*iter,0,5)
+  data=matrix(y,nr=n,nc=iter,byrow=TRUE)
+  sm=apply(data,2,sum)
+  hist(sm)
+  sm
+}
+
+## Record the plot made when D is executed
+w=myclt(n=10, iter=10000)
+
+## Find w-bar and var(w)
+paste0("Mean of w: ",round(mean(w),4))
+paste0("Variance of w: ", round(var(w),4))
+
+## Change the code in myclt()
+myclt=function(n,iter){
+  y=runif(n*iter,0,5)
+  data=matrix(y,nr=n,nc=iter,byrow=TRUE)
+  sm=apply(data,2,mean)
+  hist(sm)
+  sm
+}
+w = myclt(n=10, iter=10000)
+paste0("Mean of w: ",round(mean(w),4))
+paste0("Variance of w: ", round(var(w),4))
+
+# Task 3
+## How is the 2 used?
+### It is applied by a column instead of a row, 
+
+## How many terms are in w? 
+### 100000
+
+## Explain the sd formula. 
+### The distributions are not normal as in previous chapters. Because the distributations changed, so do the formulas that go with them. 
+
+## Record the plots. 
+mycltu=function(n,iter,a=0,b=10)
+
+y=runif(n*iter,a,b)
+data=matrix(y,nr=n,nc=iter,byrow=TRUE)
+w=apply(data,2,mean)
+param=hist(w,plot=FALSE)
+ymax=max(param$density)
+ymax=1.1*ymax
+hist(w,freq=FALSE,  ylim=c(0,ymax), main=paste("Histogram of sample mean",
+"\n", "sample size= ",n,sep=""),xlab="Sample mean")
+lines(density(w),col="Blue",lwd=3) # add a density plot
+curve(dnorm(x,mean=(a+b)/2,sd=(b-a)/(sqrt(12*n))),add=TRUE,col="Red",lty=2,lwd=3) 
+curve(dunif(x,a,b),add=TRUE,lwd=4)
+
+
+mycltu(n=1, iter=10000)
+mycltu(n=2, iter=10000)
+mycltu(n=3, iter=10000)
+mycltu(n=5, iter=10000)
+mycltu(n=10, iter=10000)
+mycltu(n=30, iter=10000)
+
+### n does not need to be large to get a normally distributed sample
+
+# Task 4
+mycltb=function(n,iter,p=0.5,...)
+{
+y=rbinom(n*iter,size=n,prob=p)
+data=matrix(y,nr=n,nc=iter,byrow=TRUE)
+w=apply(data,2,mean)
+param=hist(w,plot=FALSE)
+ymax=max(param$density)
+ymax=1.1*ymax
+hist(w,freq=FALSE,  ylim=c(0,ymax),
+main=paste("Histogram of sample mean","\n", "sample size= ",n,sep=""),
+xlab="Sample mean",...)
+curve(dnorm(x,mean=n*p,sd=sqrt(p*(1-p))),add=TRUE,col="Red",lty=2,lwd=3) 
+
+}
+
+## Make graphs 
+mycltb(n=4, iter=10000, p=0.3)
+mycltb(n=5, iter=10000, p=0.3)
+mycltb(n=10, iter=10000, p=0.3)
+mycltb(n=20, iter=10000, p=0.3)
+
+mycltb(n=4, iter=10000, p=0.7)
+mycltb(n=5, iter=10000, p=0.7)
+mycltb(n=10, iter=10000, p=0.7)
+mycltb(n=20, iter=10000, p=0.7)
+
+mycltb(n=4, iter=10000, p=0.5)
+mycltb(n=5, iter=10000, p=0.5)
+mycltb(n=10, iter=10000, p=0.5)
+mycltb(n=20, iter=10000, p=0.5)
+
+### n must be larger to have a normalized distribution
+
+# Task 5
+mycltp=function(n,iter,lambda=10,...){
+y=rpois(n*iter,lambda=lambda)
+data=matrix(y,nr=n,nc=iter,byrow=TRUE)
+w=apply(data,2,mean)
+param=hist(w,plot=FALSE)
+ymax=max(param$density)
+ymax=1.1*ymax
+layout(matrix(c(1,1,2,3),nr=2,nc=2, byrow=TRUE))
+hist(w,freq=FALSE,  ylim=c(0,ymax), col=rainbow(max(w)),
+main=paste("Histogram of sample mean","\n", "sample size= ",n," iter=",iter," lambda=",lambda,sep=""),
+xlab="Sample mean",...)
+curve(dnorm(x,mean=lambda,sd=sqrt(lambda/n)),add=TRUE,col="Red",lty=2,lwd=3) # add a theoretical curve
+barplot(table(y)/(n*iter),col=rainbow(max(y)), main="Barplot of sampled y", ylab ="Rel. Freq",xlab="y" )
+x=0:max(y)
+plot(x,dpois(x,lambda=lambda),type="h",lwd=5,col=rainbow(max(y)),
+main="Probability function for Poisson", ylab="Probability",xlab="y")
+}
+
+## Make plots
+mycltp(n=2, iter=1000, lambda = 4)
+mycltp(n=3, iter=1000, lambda = 4)
+mycltp(n=4, iter=1000, lambda = 4)
+mycltp(n=10, iter=1000, lambda = 4)
+mycltp(n=20, iter=1000, lambda = 4)
+
+mycltp(n=2, iter=1000, lambda = 10)
+mycltp(n=3, iter=1000, lambda = 10)
+mycltp(n=4, iter=1000, lambda = 10)
+mycltp(n=10, iter=1000, lambda = 10)
+mycltp(n=20, iter=1000, lambda = 10)
+
+
+myclt(n=100, iter = 10000)
+devtools::create("mcre0000")
+mcre0000::myclt(n=100,iter=10000)
+
+
